@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Document</title>
+     <style>
+        #myForm{
+            display: none;
+        }
+        
+    </style>
+</head>
+<body onload="success()">
+    <h3>Info</h3>
+    <hr></hr>
+    <p></p>
+    <p>Employee ID</p>
+    <p id = "peId"></p>
+    <p></p>
+    <p>Name</p>
+    <p id = "pfName"></p> <p id = "plName"></p>
+    <p></p>
+    <p></p>
+    <p>Department</p>
+    <p id = "pdeptCode"></p>
+    <p></p>
+    <p></p>
+    <p>Direct Supervisor ID</p>
+    <p id = "psupId"></p>
+    <p></p>
+    <p></p>
+    <p>Available Cash Reward</p>
+    <p id = "paCash"></p>
+    
+    <button onclick = "openForm()">Apply for Reimbursement</button>
+    <div id="myForm">    
+       
+            
+             Event Category:
+            <select id="peventCat" required>
+                <option value="1">University Courses</option>
+                <option value="2">Seminars</option>
+                <option value="3">Certification Preparation Classes</option>
+                <option value="4">Certification</option>
+                <option value="5">Technical Training</option>
+                <option value="6">Other</option>
+            </select>
+            Event Description: <input type ="text" id = "peventDes">
+            Justification: <input type="text" id = "pjustification" required>
+            Grade Format: <input type="text" id = "pgradeFormat" required>
+            Cost: <input type = "number" id="eCost" oninput="calcFunction()">
+            Coverable Cost: <output   id = "awardCost"></output>
+            Event Date: <input type ="date" id ="eDate">          
+            Application Date: <output id = "appDate"></output>
+       
+       
+            <button id = "btnApp" onclick = "createTuitionApp()">Submit</button>        
+   
+    </div>
+    
+    <button id = "btnviewapp" onclick = "viewApp()">View Applications</button>
+    <div id = "appView">
+        <p id = "appList"></p>
+
+    </div>
+
+  
+</body>
+
+<script>
+
+
+
+let eId = sessionStorage.getItem('eId');
+let fName = sessionStorage.getItem('fName');
+let lName = sessionStorage.getItem('lName');
+let aCash = sessionStorage.getItem('aCash');
+let deptCode = sessionStorage.getItem('dept');
+let supId = sessionStorage.getItem('supId');
+let hodId = sessionStorage.getItem('hodId');
+let rankNum = sessionStorage.getItem('rankNum');
+function success(){
+	
+	
+	 document.getElementById("peId").innerHTML = eId;
+	 document.getElementById("pfName").innerHTML = fName;
+	 document.getElementById("plName").innerHTML = lName;
+	 document.getElementById("paCash").innerHTML = aCash;
+	 document.getElementById("psupId").innerHTML = supId;
+	 document.getElementById("pdeptCode").innerHTML = deptCode;
+}
+
+
+
+
+var today = new Date();
+
+document.getElementById("appDate").value = today;
+
+
+function calcFunction(){   
+    if (document.getElementById("peventCat").value == 1){
+        x = document.getElementById("eCost").value * 0.8;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 2){
+        x = document.getElementById("eCost").value * 0.6;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 3){
+        x = document.getElementById("eCost").value * 0.75;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 4){
+        x = document.getElementById("eCost").value * 1;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 5){
+        x = document.getElementById("eCost").value * 0.9;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 6){
+        x = document.getElementById("eCost").value * 0.3;
+        document.getElementById("awardCost").value = x;
+    }
+   
+
+}
+
+
+    
+
+
+function openForm() {
+	  document.getElementById("myForm").style.display = "block";
+	}
+	
+function createTuitionApp(){  
+
+	 let eventCat = document.getElementById("peventCat").value;
+	 let eventDes = document.getElementById("peventDes").value;
+	 let justification = document.getElementById("pjustification").value;
+	 let gradeFormat = document.getElementById("pgradeFormat").value;
+     let eCost = document.getElementById("eCost").value;
+     let rCost = document.getElementById("awardCost").value;
+	 let appDate = document.getElementById("appDate").value;
+     let eDate = document.getElementById("eDate").value;  
+	
+let xhttp = new XMLHttpRequest();
+
+xhttp.onreadystatechange = function () {		
+    if(this.readyState == 4 && this.status == 200) {
+        //Keep it simple at first.
+        //This is enough for the adder.
+        
+		console.log(this.responseText);
+        alert("Application submitted successfully");
+        document.getElementById("myForm").style.display = "none";        
+    }
+}
+xhttp.open("POST", "http://localhost:8080/TRMS/createTuitionApp.do", true);
+
+xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+xhttp.send("eId="+eId+"&eCatId="+eventCat+"&eventDes="+eventDes+"&justification="+justification+"&gradeFormat="+gradeFormat+"&eCost="+eCost+"&rCost="+rCost+"&eDate="+eDate+"&appDate="+appDate);
+}
+
+function viewApp(){    
+    let xhttp = new XMLHttpRequest();   
+
+    xhttp.onreadystatechange = function(){
+    if(this.readyState == 4 && this.status == 200){
+    var appList =  JSON.parse(this.responseText);               
+        console.log(appList);
+        if (appList === undefined || appList.length == 0){
+               alert("No reimbursement application records found");
+           }    
+        if(appList != null){
+            var i;        
+            var appTable = "<ul>"       
+       
+            for (var i = 0; i < appList.length; i++) {
+            appTable+="<ul>"; 
+            appTable+="<li>"+ "Application ID: " + appList[i].appId+ "  "+ "Application Date: "+ appList[i].appDate+ "  " + "Status: "+ appList[i].status+ "</li>";
+            appTable+="</ul>";            
+        }        
+        document.getElementById("list").innerHTML = appTable;
+        }    
+    }
+}
+xhttp.open("GET", "http://localhost:8080/TRMS/appList.do?eId=" + eId, true);
+xhttp.send();
+}
+
+</script>
+
+</html>

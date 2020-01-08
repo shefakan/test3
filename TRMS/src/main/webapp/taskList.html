@@ -1,0 +1,70 @@
+<html lang="en">
+<head>
+   
+    <title>Pending tasks</title>
+</head>
+<body onload="getTaskList()">
+    <input type ='number' id = 'eId'>
+    <h1>Pending Tasks</h1>
+    
+    <p id = "list"></p>
+    <p>Please enter application ID of TRMS application you wish to evaluate.
+    <input type = "number" id = "aid">
+    <button onclick = "myFunction()">View Application</button>
+    </p>
+
+    
+    
+</body>
+
+<script>
+
+function getTaskList() {
+        let eId = document.getElementById("eId").value;
+
+        let xhttp = new XMLHttpRequest();   
+
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+            var taskList =  JSON.parse(this.responseText);               
+                console.log(this.responseText);
+                
+                
+                var i;
+            	
+                var taskTable = "<ul>"
+                var btn ="<button>"
+               
+                for (var i = 0; i < taskList.length; i++) {
+                    taskTable+="<ul>"; 
+                    taskTable+="<li>"+ "Application ID: " + "<input id =" + i +" " +"value = " +taskList[i].appId +">" + " Task Required: " + taskList[i].taskEvent + "</li>";
+                    taskTable+="</ul>";
+                    
+
+                }
+                
+                document.getElementById("list").innerHTML = taskTable;
+                
+               
+              
+                
+            }
+        }
+        xhttp.open("GET", "http://localhost:8080/TRMS/incompleteTasks.do?eId=" + 202, true);
+        xhttp.send();
+    }
+    
+  
+    
+   function  myFunction(){
+	  let v= document.getElementById("aid").value;
+	   	    
+	   
+	   console.log(v);
+	   
+	   console.log("eminem");
+    	
+    }
+
+</script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #log{
+            position: absolute;
+            left: 100px;
+            top: 150px;
+        }
+    </style>
+	<title>Login Page</title>
+</head>
+<body>
+    <h1 style="background-color:purple;">...Shefs TRMS  .</h1>
+    
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    
+  <div id = "log">
+    <h2>Please login with credentials.</h2>
+    </p><p>
+        <p></p>
+        <p></p>
+    
+
+	<h3>Employee ID</h3>
+	<input id="eId" type="number">
+	
+	<h3>Employee pass</h3>
+	<input id="ePass" type="text">
+	
+	
+	
+	<button id="btn1" onclick="getEmployee()">Login</button>
+	<p id="result"></p>
+</div>
+</body>
+
+<script>
+
+	
+
+	function getEmployee() {
+		
+		let neId = document.getElementById("eId").value;
+		let nePass = document.getElementById("ePass").value;
+		
+		let xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			
+			if(this.readyState == 4 && this.status == 200) {
+				
+				console.log(this.responseText);
+				console.log(eId);
+				
+				let Employee = JSON.parse(this.responseText);
+				
+				
+				console.log(Employee);
+				
+				sessionStorage.setItem('fName',Employee.fName);
+				sessionStorage.setItem('lName',Employee.lName);
+				sessionStorage.setItem('eId', Employee.eId);
+				sessionStorage.setItem('aCash',Employee.aCash);
+				sessionStorage.setItem('dept',Employee.dept);
+				sessionStorage.setItem('supId',Employee.supId);
+				sessionStorage.setItem('hodId', Employee.hodId);
+				sessionStorage.setItem('rankNum', Employee.rankNum);
+				
+				let rk = Employee.rankNum;
+				
+				if(rk == 1){
+					console.log(1);
+				window.open("http://localhost:8080/TRMS/regularemployee.html");
+				}
+				if (rk == 2){
+					window.open("http://localhost:8080/TRMS/supervisorpage1.html");
+				}
+				if (rk == 3){
+					window.open("http://localhost:8080/TRMS/hodpage1.html");
+				}
+				if (rk == 4){
+					window.open("http://localhost:8080/TRMS/bencopage1.html");
+				}
+				
+				
+			}
+		}
+		
+		xhttp.open("GET", "http://localhost:8080/TRMS/getEmployee.do?eId=" + neId + "&ePass=" + nePass, true);
+		
+		xhttp.send();
+	}
+
+</script>
+</html>

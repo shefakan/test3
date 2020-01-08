@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    
+    <title>Entire Application and pending Tasks</title>
+</head>
+<body onload = "getApplication()">
+   <h3> Applicant Name:</h3> <output type ="text" id = "xaname"></output>
+   <h3> Employee ID:</h3> <output type ="number" id = "xeid"></output>
+   <h3> Employee Dept:</h3> <output type ="text" id = "xdept"></output>
+   <h3> Employee Direct Supervisor:</h3> <output type ="text" id = "xds"></output>
+   <h3> Application Number:</h3> <output type ="number" id = "xanum"></output>
+   <h3> Application Date:</h3> <output type ="text" id = "xadate"></output>
+   <h3> Applicant Status:</h3> <output type ="text" id = "xastatus"></output>
+   <h3> Event Date:</h3> <output type ="text" id = "xedate"></output>
+   <h3> Event Category:</h3> <output type ="text" id = "xecat"></output>
+   <h3> Event description:</h3> <output type ="text" id = "xedes"></output>
+   <h3> Work Related Justification:</h3> <output type ="text" id = "xjust"></output>
+   <h3> Total Cost: $</h3> <output type ="number" id = "xtcost"></output>
+   <h3> Coverable Cost:</h3> <output type ="number" id = "xccost"></output>
+   <h3> New Available Award Balance:</h3> <output type ="text" id = "xabalance"></output>
+   <h3> Required Task</h3> <output type ="text" id = "xrtask"></output>
+   
+
+
+   <button onclick = "getApplicantEmployee()">Approve</button>
+   <button>Reject</button>
+   <button>Request Additional Information</button>
+
+    
+    
+</body>
+<script>
+
+
+
+    
+	function getApplication() {		
+		//let zaid = document.getElementById("aid").value;
+		let xhttp = new XMLHttpRequest();		
+		xhttp.onreadystatechange = function() {			
+			if(this.readyState == 4 && this.status == 200) {				
+				console.log(this.responseText);					
+				let Application = JSON.parse(this.responseText);						
+				console.log(Application.eId);
+                
+               
+                document.getElementById("xeid").value = Application.eId;
+                document.getElementById("xanum").value = Application.appId;
+                document.getElementById("xastatus").value = Application.status;
+                document.getElementById("xecat").value = Application.eventCat;
+                document.getElementById("xedes").value = Application.eventDes;
+                document.getElementById("xjust").value = Application.justification;
+                
+			}
+		}		
+		xhttp.open("GET", "http://localhost:8080/TRMS/getApplication.do?appId=" + 31, true);		
+		xhttp.send();
+	}
+	
+	
+
+    function getApplicantEmployee() {		
+		//let zaid = document.getElementById("aid").value;
+		
+        let x = document.getElementById("xeid").value;
+		let xhttp = new XMLHttpRequest();		
+		xhttp.onreadystatechange = function() {			
+			if(this.readyState == 4 && this.status == 200) {				
+				console.log(this.responseText);					
+				let Applicant = JSON.parse(this.responseText);						
+				console.log(Applicant.fName);
+                document.getElementById("xaname").value = Applicant.fName + " " + Applicant.lName;
+                document.getElementById("xdept").value = Applicant.deptCode;
+                document.getElementById("xds").value = Applicant.supId;
+                document.getElementById("xabalance").value = Applicant.aCash;
+			}
+		}		
+		xhttp.open("GET", "http://localhost:8080/TRMS/getApplicantEmployee.do?eId=" + x, true);		
+		xhttp.send();
+	}
+
+   
+
+</script>
+
+</html>

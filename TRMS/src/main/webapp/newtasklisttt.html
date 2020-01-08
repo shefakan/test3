@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+   
+    <title>Pending tasks</title>
+</head>
+<body onload = "getTaskList()">
+    
+    <h1>Pending Tasks</h1>
+    
+    <p id = "list"></p>
+    <p>
+    <button onclick = "myFunction()">View Application</button>
+    Please enter application ID of TRMS application you wish to evaluate.
+    </p>
+
+</body>
+
+<script>
+
+function getTaskList() {
+        //let eId = document.getElementById("eId").value;
+
+        let xhttp = new XMLHttpRequest();   
+
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+            var taskList =  JSON.parse(this.responseText);               
+                console.log(this.responseText);
+                               
+                var i;
+            	
+                var taskTable = "<li>"
+               
+                for (var i = 0; i < taskList.length; i++) {
+                     
+                    taskTable+="<li class = tList>"+"Application ID: "+" " +taskList[i].appId + "Task ID: "+ taskList[i].taskId+ " " + "Task required: " + taskList[i].taskEvent+"</li>";
+                   
+                    }
+                
+                document.getElementById("list").innerHTML = taskTable;           
+            }
+        }
+        xhttp.open("GET", "http://localhost:8080/TRMS/incompleteTasks.do?eId=" + 144, true);
+        xhttp.send();
+    }
+    
+  
+    
+   function  myFunction(){
+	  let x = document.getElementById("list").value
+	  	    
+	   
+	   console.log(x);
+	   
+	   console.log("eminem");
+    	
+    }
+
+</script>
+</html>

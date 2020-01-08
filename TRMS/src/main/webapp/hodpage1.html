@@ -1,0 +1,355 @@
+<html lang="en">
+<head>
+    <style>
+    
+    #rejectarea{
+            display:none;
+        
+            }
+        #requestarea{
+            display: none;
+        }    
+    
+    .btn {
+  background-color: purple; /* Green */
+  border: 1px solid black;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 150px;
+  display: block;
+  border-radius: 2px;
+}
+.btn:hover {
+  background-color: purple;
+}
+.btn:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+header{
+    background-color: purple;
+}
+    
+    </style>
+</head>
+<body onload = "success()">
+    <header>
+        <h1>TRMS 0.1</h1>
+    </header>
+
+    <h3>Info</h3>
+    <hr></hr>
+    <p></p>
+    <p>Employee ID</p>
+    <p id = "peId"></p>
+    <p></p>
+    <p>Name</p>
+    <p id = "pfName"></p> <p id = "plName"></p>
+    <p></p>
+    <p></p>
+    <p>Department</p>
+    <p id = "pdeptCode"></p>
+    <p></p>
+    <p></p>
+    <p>Direct Supervisor ID</p>
+    <p id = "psupId"></p>
+    <p></p>
+    <p></p>
+    <p>Available Cash Reward</p>
+    <p id = "paCash"></p>
+    
+    <button class = "btn" onclick = "openForm()">Apply for Reimbursement</button>
+    <button class = "btn" id = "btnviewapp" onclick = "viewApp()">View Applications</button>
+    <button class = "btn" onclick = "openGrade()" >Enter Final Grade</button>
+    <button class = "btn" onclick = "getTaskList()">Pending Tasks</button>
+    <button class = "btn" onclick = "logout()">Log Out</button>
+
+
+    <div id="myForm">    
+       
+            
+             Event Category:
+            <select id="peventCat" required>
+                <option value="1">University Courses</option>
+                <option value="2">Seminars</option>
+                <option value="3">Certification Preparation Classes</option>
+                <option value="4">Certification</option>
+                <option value="5">Technical Training</option>
+                <option value="6">Other</option>
+            </select>
+            Event Description: <input type ="text" id = "peventDes">
+            Justification: <input type="text" id = "pjustification" required>
+            Grade Format: <input type="text" id = "pgradeFormat" required>
+            Cost: <input type = "number" id="eCost" oninput="calcFunction()">
+            Coverable Cost: <output   id = "awardCost"></output>
+            Event Date: <input type ="date" id ="eDate">          
+            Application Date: <output id = "appDate"></output>
+       
+       
+            <button id = "btnApp" onclick = "createTuitionApp()">Submit</button>        
+   
+    </div>
+    
+    
+    <div id = "appView">
+        <p id = "appList"></p>
+
+    </div>
+
+    
+
+    <div id = "finalGrade">
+        Application ID: <input type="text" id = "pappId">
+        Please Enter Final Grade: <input type = "text" id = "pfGrade">
+        Date: <output id = "pfGradeDate"></output>
+
+        <button onclick = "submitFinalGrade()">Submit Final Grade</button>
+
+    </div>
+
+
+    
+    <h1>Pending Tasks</h1>
+    
+    <p id = "list"></p>
+    <p>
+    
+    Please enter application ID of TRMS application you wish to evaluate.
+    <input type="text" id = "appId"><button onclick="getApplication()">View Application</button>  
+    </p>
+    
+    
+    
+</body>
+
+<script>
+    
+let eId = sessionStorage.getItem('eId');
+let fName = sessionStorage.getItem('fName');
+let lName = sessionStorage.getItem('lName');
+let aCash = sessionStorage.getItem('aCash');
+let deptCode = sessionStorage.getItem('dept');
+let supId = sessionStorage.getItem('supId');
+let hodId = sessionStorage.getItem('hodId');
+let rankNum = sessionStorage.getItem('rankNum');
+function success(){
+	
+	
+	 document.getElementById("peId").innerHTML = eId;
+	 document.getElementById("pfName").innerHTML = fName;
+	 document.getElementById("plName").innerHTML = lName;
+	 document.getElementById("paCash").innerHTML = aCash;
+	 document.getElementById("psupId").innerHTML = supId;
+	 document.getElementById("pdeptCode").innerHTML = deptCode;
+}
+
+
+function getTaskList() {
+        //let eId = document.getElementById("eId").value;
+
+        let xhttp = new XMLHttpRequest();   
+
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+            var taskList =  JSON.parse(this.responseText);               
+                console.log(this.responseText);
+                               
+                var i;
+            	
+                var taskTable = "<li>"
+               
+                for (var i = 0; i < taskList.length; i++) {
+                     
+                    taskTable+="<li class = tList>"+"Application ID: "+" " +taskList[i].appId + "Task ID: "+ taskList[i].taskId+ " " + "Task required: " + taskList[i].taskEvent+"</li>";
+                   
+                    }
+                
+                document.getElementById("list").innerHTML = taskTable;           
+            }
+        }
+        xhttp.open("GET", "http://localhost:8080/TRMS/incompleteTasks.do?eId=" + eId, true);
+        xhttp.send();
+    }
+
+    function getApplication() {		
+		let appId = document.getElementById("appId").value;
+		let xhttp = new XMLHttpRequest();		
+		xhttp.onreadystatechange = function() {			
+			if(this.readyState == 4 && this.status == 200) {				
+				console.log(this.responseText);					
+				let Application = JSON.parse(this.responseText);						
+				console.log(Application.eId);
+
+				  sessionStorage.setItem('aeId', Application.eId);
+	                sessionStorage.setItem('aappId', Application.appId);
+	                sessionStorage.setItem('astatus', Application.status);
+	                sessionStorage.setItem('aeCatId', Application.eCatId);
+	                sessionStorage.setItem('aeventDes', Application.eventDes);
+	                sessionStorage.setItem('ajustification', Application.justification);
+	                sessionStorage.setItem('agradeFormat', Application.gradeFormat);
+	                sessionStorage.setItem('aeCost', Application.eCost);
+	                sessionStorage.setItem('arCost', Application.rCost);
+	                sessionStorage.setItem('aeDate', Application.eDate);
+	                sessionStorage.setItem('aappDate', Application.appDate);
+	                sessionStorage.setItem('asupApproval', Application.supApproval);
+	                sessionStorage.setItem('ahodApproval', Application.hodApproval);
+	                sessionStorage.setItem('aiBencoApproval', Application.iBencoApproval);
+	                sessionStorage.setItem('afBencoApproval', Application.fBencoApproval);
+                
+                window.open("http://localhost:8080/TRMS/hodpage2.html");
+                
+			}
+		}		
+		xhttp.open("GET", "http://localhost:8080/TRMS/getApplication.do?appId=" + appId, true);		
+		xhttp.send();
+	}
+    
+    function openGrade() {
+	  document.getElementById("finalGrade").style.display = "block";
+	}
+
+function submitFinalGrade(){ 
+
+let pappId = document.getElementById("pappId").value;
+let pfGrade = document.getElementById("pfGrade").value;
+let ptDate = document.getElementById("pfGradeDate").value;
+//let ptaskId = document.getElementById()
+
+
+let xhttp = new XMLHttpRequest();
+
+xhttp.onreadystatechange = function () {		
+if(this.readyState == 4 && this.status == 200) {
+   //Keep it simple at first.
+   //This is enough for the adder.
+   
+   console.log(this.responseText);
+   alert("Application submitted successfully");
+   document.getElementById("myForm").style.display = "none";        
+}
+}
+xhttp.open("POST", "http://localhost:8080/TRMS/submitGrade.do", true);
+
+xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+xhttp.send("pfGrade="+pfGrade+"&pappId="+pappId+"&ptaskId="+ptaskId+"&myeId="+eId+"&ptDate="+ptDate);
+}
+
+function viewApp(){    
+    let xhttp = new XMLHttpRequest();   
+
+    xhttp.onreadystatechange = function(){
+    if(this.readyState == 4 && this.status == 200){
+    var appList =  JSON.parse(this.responseText);               
+        console.log(appList);
+        if (appList === undefined || appList.length == 0){
+               alert("No reimbursement application records found");
+           }    
+        if(appList != null){
+            var i;        
+            var appTable = "<ul>"       
+       
+            for (var i = 0; i < appList.length; i++) {
+            appTable+="<ul>"; 
+            appTable+="<li>"+ "Application ID: " + appList[i].appId+ "  "+ "Application Date: "+ appList[i].appDate+ "  " + "Status: "+ appList[i].status+ "</li>";
+            appTable+="</ul>";            
+        }        
+        document.getElementById("list").innerHTML = appTable;
+        }    
+    }
+}
+xhttp.open("GET", "http://localhost:8080/TRMS/appList.do?eId=" + eId, true);
+xhttp.send();
+}
+
+function createTuitionApp(){  
+
+let eventCat = document.getElementById("peventCat").value;
+let eventDes = document.getElementById("peventDes").value;
+let justification = document.getElementById("pjustification").value;
+let gradeFormat = document.getElementById("pgradeFormat").value;
+let eCost = document.getElementById("eCost").value;
+let rCost = document.getElementById("awardCost").value;
+let appDate = document.getElementById("appDate").value;
+let eDate = document.getElementById("eDate").value;  
+
+let xhttp = new XMLHttpRequest();
+
+xhttp.onreadystatechange = function () {		
+if(this.readyState == 4 && this.status == 200) {
+   //Keep it simple at first.
+   //This is enough for the adder.
+   
+   console.log(this.responseText);
+   alert("Application submitted successfully");
+   document.getElementById("myForm").style.display = "none";        
+}
+}
+xhttp.open("POST", "http://localhost:8080/TRMS/createTuitionApp.do", true);
+
+xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+xhttp.send("eId="+eId+"&eCatId="+eventCat+"&eventDes="+eventDes+"&justification="+justification+"&gradeFormat="+gradeFormat+"&eCost="+eCost+"&rCost="+rCost+"&eDate="+eDate+"&appDate="+appDate);
+}
+
+var today = new Date();
+
+document.getElementById("appDate").value = today;
+document.getElementById("pfGradeDate").value = today;
+
+
+function calcFunction(){   
+    if (document.getElementById("peventCat").value == 1){
+        x = document.getElementById("eCost").value * 0.8;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 2){
+        x = document.getElementById("eCost").value * 0.6;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 3){
+        x = document.getElementById("eCost").value * 0.75;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 4){
+        x = document.getElementById("eCost").value * 1;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 5){
+        x = document.getElementById("eCost").value * 0.9;
+        document.getElementById("awardCost").value = x;
+    }
+    if (document.getElementById("peventCat").value == 6){
+        x = document.getElementById("eCost").value * 0.3;
+        document.getElementById("awardCost").value = x;
+    }
+   
+
+}
+
+
+function openForm() {
+	  document.getElementById("myForm").style.display = "block";
+	}
+
+
+
+
+
+function logout(){
+	window.open("http://localhost:8080/TRMS/loginpage.html")
+}
+
+
+
+
+
+
+</script>
+</html>

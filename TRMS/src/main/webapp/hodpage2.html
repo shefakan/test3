@@ -1,0 +1,282 @@
+<html lang="en">
+<head>
+        <style>
+        #rejectarea{
+            display:none;
+        
+            }
+        #requestarea{
+            display: none;
+        }    
+        
+        .btn {
+  background-color: purple; /* Green */
+  border: 1px solid black;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 150px;
+  display: block;
+  border-radius: 2px;
+}
+.btn:hover {
+  background-color: purple;
+}
+.btn:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+header{
+    background-color: purple;
+}
+
+
+        
+        </style>
+    
+    <title>Document</title>
+</head>
+<body onload = "applicationView()">
+
+
+    <h3> Applicant Name:</h3> <output type ="text" id = "xaname"></output>
+   <h3> Employee ID:</h3> <output type ="number" id = "xeid"></output>
+   <h3> Employee Dept:</h3> <output type ="text" id = "xdept"></output>
+   <h3> Employee Direct Supervisor:</h3> <output type ="text" id = "xds"></output>
+   
+   
+   
+   <div style = "float: right;">
+   
+   <h3> Application Number:</h3> <output type ="number" id = "xanum"></output>
+   <h3> Application Date:</h3> <output type ="text" id = "xadate"></output>
+   <h3> Applicant Status:</h3> <output type ="text" id = "xastatus"></output>
+   <h3> Supervisor Approval:</h3> <output type ="text" id = "xsupapproval"></output>
+   <h3> Head of Department Approval:</h3> <output type ="text" id = "xhodapproval"></output>
+   <h3> Initial Benefits Coordinator Approval:</h3> <output type ="text" id = "xibencoapproval"></output>   <h3> Event Date:</h3> <output type ="text" id = "xedate"></output>
+   <h3> Event Category:</h3> <output type ="text" id = "xecat"></output>
+   <h3> Event description:</h3> <output type ="text" id = "xedes"></output>
+   <h3> Final Benefits Coordinator Approval:</h3> <output type ="text" id = "xfbencoapproval"></output>
+
+   <h3> Work Related Justification:</h3> <output type ="text" id = "xjust"></output>
+   <h3> Total Cost: $</h3> <output type ="number" id = "xtcost"></output>
+   <h3> Coverable Cost:</h3> <output type ="number" id = "xccost"></output>
+   <h3> New Available Award Balance:</h3> <output type ="text" id = "xabalance"></output>
+   
+   
+   <h3> Activities:</h3> 
+   <output type ="text" id = "messages"></output>
+   <h3> Pending Task ID:</h3> <input type ="number" id = "ptaskId">
+   <h3> Required Task</h3> <output type ="text" id = "xrtask"></output>
+   <h3>Date</h3> <output type ="date" id = "ptDate"></output>
+   <div id = "rejectarea">
+       Please help enter reason for denial.
+       <textarea id = "rejectnote" maxlength="1000"></textarea>
+       <button onclick = "hodReject()">Deny</button>
+   </div>
+   </div>
+   
+   <div id = "requestarea">
+    Enter details of request: <textarea type ="text" id = "requestnote" maxlength="1000"></textarea>
+    <output id = "newtaskDate" ></output>
+    </div>
+<div>
+   <button class = "btn" onclick = "moreInfo()">Request Additional Information</button>
+   <button  class = "btn"  onclick = "supReject()">Send</button>
+   <button  class = "btn" onclick = "getApplicantEmployee()">View Claimant Details</button>
+   <button   class = "btn" onclick = "hodApprove()">Approve</button>
+   <button   class = "btn" onclick = "reject()">Reject</button>
+   </div>
+   <div id = "rejectarea">
+       Please help enter reason for denial.
+       <textarea id = "rejectnote" maxlength="1000"></textarea>
+       <button onclick = "hodReject()">Deny</button>
+   </div>
+   
+   <div id = "requestarea">
+    Enter details of request: <textarea type ="text" id = "requestnote" maxlength="1000"></textarea>
+    <output id = "newtaskDate" ></output>
+
+   
+</div>
+    
+</body>
+
+<script>
+let aeId= sessionStorage.getItem('aeId');
+let aappId = sessionStorage.getItem('aappId');
+let astatus = sessionStorage.getItem('astatus');
+let aeCatId = sessionStorage.getItem('aeCatId');
+let aeventDes = sessionStorage.getItem('aeventDes');
+let ajustification = sessionStorage.getItem('ajustification');
+let agradeFormat = sessionStorage.getItem('agradeFormat');
+let aeCost = sessionStorage.getItem('aeCost');
+let arCost = sessionStorage.getItem('arCost');
+let aeDate = sessionStorage.getItem('aeDate');
+let aappDate = sessionStorage.getItem('aappDate');
+let asupApproval = sessionStorage.getItem('asupApproval');
+let ahodApproval = sessionStorage.getItem('ahodApproval');
+let aiBencoApproval = sessionStorage.getItem('aiBencoApproval');
+let afBencoApproval = sessionStorage.getItem('afBencoApproval');
+    function applicationView(){
+         document.getElementById("xeid").innerHTML = aeId;
+         document.getElementById("xanum").innerHTML = aappId;
+         document.getElementById("xastatus").innerHTML = astatus;
+         document.getElementById("xecat").innerHTML = aeCatId;
+         document.getElementById("xedes").innerHTML = aeventDes;
+         document.getElementById("xjust").innerHTML = ajustification;
+         document.getElementById("xtcost").innerHTML = aeCost;
+         document.getElementById("xccost").innerHTML = arCost;
+       document.getElementById("xibencoapproval").innerHTML = aiBencoApproval;
+       document.getElementById("xfbencoapproval").innerHTML = afBencoApproval; 
+       document.getElementById("xsupapproval").innerHTML = asupApproval;  
+       document.getElementById("xhodapproval").innerHTML = ahodApproval;  
+       document.getElementById("xedate").innerHTML = aeDate;
+       document.getElementById("xadate").innerHTML = aappDate;
+
+    }     
+    var today = new Date();
+
+    document.getElementById("ptDate").value = today;   
+    document.getElementById("newtaskDate").value = today; 
+
+    function reject(){
+    document.getElementById("rejectarea").style.display = "block";
+}
+function moreInfo(){
+    document.getElementById("requestarea").style.display = "block";
+}
+
+    function getApplicantEmployee() {		
+		//let zaid = document.getElementById("aid").value;
+		
+        let x = document.getElementById("xeid").value;
+		let xhttp = new XMLHttpRequest();		
+		xhttp.onreadystatechange = function() {			
+			if(this.readyState == 4 && this.status == 200) {				
+				console.log(this.responseText);					
+				let Applicant = JSON.parse(this.responseText);						
+				console.log(Applicant.fName);
+                document.getElementById("xaname").value = Applicant.fName + " " + Applicant.lName;
+                document.getElementById("xdept").value = Applicant.dept;
+                document.getElementById("xds").value = Applicant.supId;
+                document.getElementById("xabalance").value = Applicant.aCash;
+                
+			}
+		}		
+		xhttp.open("GET", "http://localhost:8080/TRMS/getApplicantEmployee.do?eId=" + x, true);		
+		xhttp.send();
+	}
+
+    function hodApprove(){  
+        let xanum= document.getElementById("xanum").value;
+        let ptaskId = document.getElementById("ptaskId").value;
+        let ptDate = document.getElementById("ptDate").value;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+
+            if(this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            alert("Approval sent successfully");       
+            }
+            }
+
+            xhttp.open("POST", "http://localhost:8080/TRMS/hodApprove.do", true);
+
+            xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhttp.send("phodApproval=approved&pappId="+xanum+"&ptaskId="+ptaskId+"&myeId="+eId+"&ptDate="+ptDate);     
+    }
+    
+    
+    let eId = sessionStorage.getItem('eId');
+    let fName = sessionStorage.getItem('fName');
+    let lName = sessionStorage.getItem('lName');
+    let aCash = sessionStorage.getItem('aCash');
+    let deptCode = sessionStorage.getItem('dept');
+    let supId = sessionStorage.getItem('supId');
+    let hodId = sessionStorage.getItem('hodId');
+    let rankNum = sessionStorage.getItem('rankNum');
+    
+    
+    function hodReject(){  
+        
+        let ptaskId = document.getElementById("ptaskId").value;
+        let xanum= document.getElementById("xanum").value;
+        let rejectnote = document.getElementById("rejectnote").value;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+
+            if(this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            alert("Application submitted successfully");       
+            }
+            }
+
+            xhttp.open("POST", "http://localhost:8080/TRMS/hodReject.do", true);
+
+            xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhttp.send("phodApproval="+rejectnote+"&pappId="+xanum+"&ptaskId="+ptaskId);     
+    }
+
+    function addTask(){  
+        
+        let newtaskDate = document.getElementById("newtaskDate").value;
+        let xanum= document.getElementById("xanum").value;
+        let taskEvent = document.getElementById("requestarea").value;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+
+            if(this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            alert("Task Added Successfully");       
+            }
+            }
+
+            xhttp.open("POST", "http://localhost:8080/TRMS/addTask.do", true);
+
+            xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhttp.send("seId="+eId+"&reId="+aeId+"&appId="+xanum+"&taskEvent="+taskEvent+"&taskDate"+newtaskDate);     
+    }
+
+    
+    function allTasks() {
+        //let eId = document.getElementById("eId").value;
+        let xanum= document.getElementById("xanum").value;
+        let xhttp = new XMLHttpRequest();   
+
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+            var activities =  JSON.parse(this.responseText);               
+                console.log(this.responseText);
+                               
+                var i;
+            	
+                var taskTable = "<li>"
+               
+                for (var i = 0; i < activities.length; i++) {
+                     
+                    taskTable+="<li>"+"Sender ID: "+" " +activities[i].seId + "Request: "+ activities[i].taskEvent+ " " + "Recipient ID: " + activities[i].reId+ " " + "Rsponse: " +activities[i].taskReply+"</li>";
+                   
+                    }
+                
+                document.getElementById("messages").innerHTML = taskTable;           
+            }
+        }
+        xhttp.open("GET", "http://localhost:8080/TRMS/allTasks.do?pappId=" + xanum, true);
+        xhttp.send();
+    }
+
+
+
+
+</script>
+</html>
